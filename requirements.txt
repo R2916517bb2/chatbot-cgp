@@ -7,4 +7,7 @@ pyngrok
 sentence-transformers
 faiss-cpu
 gunicorn
+Pillow
+PyMuPDF # or fitz
+pytesseract
 
