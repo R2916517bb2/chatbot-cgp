@@ -25,7 +25,8 @@ NGROK_DOMAIN = "my-pdf-qa.ngrok.app" # Optional: Custom domain for ngrok (requir
 
 # Setup
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(VECTOR_STORE_PATH, exist_ok=True)import os
+os.makedirs(VECTOR_STORE_PATH, exist_ok=True)
+import os
 import time
 import logging
 from flask import Flask, request, jsonify, render_template_string, redirect
