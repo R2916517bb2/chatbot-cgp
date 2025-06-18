@@ -1,0 +1,8 @@
+Flask
+langchain
+langchain-community
+langchain-huggingface
+langchain-groq
+pyngrok
+sentence-transformers
+faiss-cpu
