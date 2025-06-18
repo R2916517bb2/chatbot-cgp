@@ -1,28 +1,8 @@
-# Core Flask and web dependencies
-Flask==2.3.3
-gunicorn==21.2.0
-werkzeug==2.3.7
-
-# LangChain and AI dependencies
-langchain==0.1.0
-langchain-community==0.0.13
-langchain-huggingface==0.0.1
-langchain-groq==0.0.1
-
-# Vector store and embeddings
-sentence-transformers==2.2.2
-faiss-cpu==1.7.4
-
-# PDF processing
-PyMuPDF==1.23.14
-Pillow==10.1.0
-
-# Optional OCR (may fail to install on some platforms)
-pytesseract==0.3.10; sys_platform != "win32"
-
-# Optional ngrok for local development
-pyngrok==7.0.0
-
-# Utility libraries
-python-dateutil==2.8.2
-requests==2.31.0
+Flask
+langchain
+langchain-community
+langchain-huggingface
+langchain-groq
+pyngrok
+sentence-transformers
+faiss-cpu
