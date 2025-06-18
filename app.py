@@ -41,8 +41,8 @@ from datetime import datetime
 import traceback
 
 # Configuration
-UPLOAD_FOLDER = "/content/uploads"
-VECTOR_STORE_PATH = "/content/vector_store"
+UPLOAD_FOLDER = "/tmp/uploads"
+VECTOR_STORE_PATH = "/tmp/vector_store"
 ALLOWED_EXTENSIONS = {'pdf'}
 PASSWORD = "654321"  # Password for upload access
 # IMPORTANT: Replace with your actual API keys
