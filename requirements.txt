@@ -6,3 +6,5 @@ langchain-groq
 pyngrok
 sentence-transformers
 faiss-cpu
+gunicorn
+
