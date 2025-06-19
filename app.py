@@ -6,7 +6,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.question_answering import load_qa_chain
-from langchain_groq import ChatGroq  # Updated import
+from langchain_groq import ChatGroq
 from pyngrok import ngrok
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
