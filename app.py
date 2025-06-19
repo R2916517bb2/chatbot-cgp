@@ -16,10 +16,10 @@ import PyPDF2
 load_dotenv()
 
 # Retrieve environment variables
-GROQ_API_KEY = os.getenv('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')
-NGROK_TOKEN = os.getenv('2yenKU83I2XYvjBDKhkkMSwua3p_8gFQkz3EsUPRSMYpoHwW')
-NGROK_DOMAIN = os.getenv('my-pdf-qa.ngrok.app')
-PASSWORD = os.getenv('654321')
+GROQ_API_KEY = os.getenv('GROQ_API_KEY')
+NGROK_TOKEN = os.getenv('NGROK_TOKEN')
+NGROK_DOMAIN = os.getenv('NGROK_DOMAIN')
+PASSWORD = os.getenv('PASSWORD')
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -40,23 +40,7 @@ def upload_file():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
     file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'})
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return jsonify({'success': 'File uploaded successfully'})
-    return jsonify({'error': 'Invalid file format'})
-
-@app.route('/ask', methods=['POST'])
-def ask_question():
-    data = request.get_json()
-    question = data.get('question')
-    filename = data.get('filename')
-    password = data.get('password')
-
-    != PASSWORD:
-        return jsonify({'error': 'Invalid password'})
+    jsonify({'error': 'Invalid password'})
 
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     if not os.path.exists(file_path):
@@ -98,10 +82,8 @@ def status():
     return jsonify({'status': 'running'})
 
 if __name__ == '__main__':
-    # Start ngrok tunnel
+    port = int(os.environ.get("PORT", 5000))
     ngrok.set_auth_token(NGROK_TOKEN)
-    public_url = ngrok.connect(5000)
+    public_url = ngrok.connect(port)
     print(f" * ngrok tunnel opened at {public_url}")
-
-    # Run Flask app
-    app.run(debug=True, port=5000)
+    app.run(host="0.0.0.0", port=port)
