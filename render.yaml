@@ -1,0 +1,6 @@
+
+services:
+  - type: web
+    name: pdf-qa-app
+    env: docker
+    plan: free
