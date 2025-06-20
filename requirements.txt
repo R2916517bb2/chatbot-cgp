@@ -7,4 +7,5 @@ pyngrok
 sentence-transformers
 faiss-cpu
 gunicorn
+PyPDF2
 
