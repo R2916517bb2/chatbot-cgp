@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify, render_template, send_file
 from werkzeug.utils import secure_filename
 import os
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.question_answering import load_qa_chain
 from langchain_groq import ChatGroq
