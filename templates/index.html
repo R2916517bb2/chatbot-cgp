@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Q&A System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .upload-section, .question-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 12px;
+            border: 2px dashed transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .file-input-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .file-name {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        input[type="text"], input[type="password"], textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .response-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+
+        .response-text {
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .error {
+            color: #e74c3c;
+            background: #ffeaea;
+            border-left-color: #e74c3c;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-style: italic;
+        }
+
+        .status-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PDF Q&A System</h1>
+        
+        <div class="upload-section">
+            <div class="section-title">📄 Upload PDF Document</div>
+            <div class="file-input-wrapper">
+                <input type="file" id="pdfFile" class="file-input" accept=".pdf">
+                <div class="file-input-button">
+                    <span>Choose PDF File</span>
+                </div>
+            </div>
+            <div id="fileName" class="file-name" style="display: none;"></div>
+            <div id="uploadStatus" class="status-message"></div>
+        </div>
+
+        <div class="question-section">
+            <div class="section-title">❓ Ask Questions</div>
+            <div class="input-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Enter password">
+            </div>
+            <div class="input-group">
+                <label for="question">Your Question:</label>
+                <textarea id="question" placeholder="Ask a question about the uploaded PDF..."></textarea>
+            </div>
+            <button id="askBtn" class="submit-btn" disabled>Ask Question</button>
+        </div>
+
+        <div id="response" class="response-section">
+            <div id="responseText" class="response-text"></div>
+        </div>
+    </div>
+
+    <script>
+        let uploadedFileName = '';
+
+        document.getElementById('pdfFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const fileNameDiv = document.getElementById('fileName');
+                fileNameDiv.textContent = `Selected: ${file.name}`;
+                fileNameDiv.style.display = 'block';
+                
+                // Upload file immediately
+                uploadFile(file);
+            }
+        });
+
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.textContent = 'Uploading...';
+            statusDiv.className = 'status-message';
+            statusDiv.style.display = 'block';
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    uploadedFileName = data.filename;
+                    statusDiv.textContent = 'File uploaded successfully!';
+                    statusDiv.className = 'status-message status-success';
+                    document.getElementById('askBtn').disabled = false;
+                } else {
+                    statusDiv.textContent = `Error: ${data.error}`;
+                    statusDiv.className = 'status-message status-error';
+                }
+            })
+            .catch(error => {
+                statusDiv.textContent = `Upload failed: ${error.message}`;
+                statusDiv.className = 'status-message status-error';
+            });
+        }
+
+        document.getElementById('askBtn').addEventListener('click', function() {
+            const question = document.getElementById('question').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!question) {
+                alert('Please enter a question');
+                return;
+            }
+            
+            if (!password) {
+                alert('Please enter the password');
+                return;
+            }
+            
+            if (!uploadedFileName) {
+                alert('Please upload a PDF file first');
+                return;
+            }
+
+            askQuestion(question, password, uploadedFileName);
+        });
+
+        function askQuestion(question, password, filename) {
+            const responseDiv = document.getElementById('response');
+            const responseText = document.getElementById('responseText');
+            
+            responseDiv.style.display = 'block';
+            responseDiv.className = 'response-section loading';
+            responseText.textContent = 'Processing your question...';
+            
+            document.getElementById('askBtn').disabled = true;
+
+            fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    question: question,
+                    password: password,
+                    filename: filename
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('askBtn').disabled = false;
+                
+                if (data.error) {
+                    responseDiv.className = 'response-section error';
+                    responseText.textContent = `Error: ${data.error}`;
+                } else {
+                    responseDiv.className = 'response-section';
+                    responseText.textContent = data.answer;
+                }
+            })
+            .catch(error => {
+                document.getElementById('askBtn').disabled = false;
+                responseDiv.className = 'response-section error';
+                responseText.textContent = `Request failed: ${error.message}`;
+            });
+        }
+
+        // Enable ask button when password is entered and file is uploaded
+        document.getElementById('password').addEventListener('input', function() {
+            const hasPassword = this.value.trim().length > 0;
+            const hasFile = uploadedFileName.length > 0;
+            document.getElementById('askBtn').disabled = !(hasPassword && hasFile);
+        });
+    </script>
+</body>
+</html>
