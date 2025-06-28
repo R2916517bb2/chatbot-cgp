@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Flask==2.3.3
 langchain==0.1.0
 langchain-community==0.0.10
@@ -9,3 +10,16 @@ gunicorn==21.2.0
 PyPDF2==3.0.1
 python-dotenv==1.0.0
 Werkzeug==2.3.7
+=======
+Flask
+langchain
+langchain-community
+langchain-huggingface
+langchain-groq
+pyngrok
+sentence-transformers
+faiss-cpu
+gunicorn
+PyPDF2
+
+>>>>>>> 801936c935c8f84e30a848a7e41a116360589f2f
