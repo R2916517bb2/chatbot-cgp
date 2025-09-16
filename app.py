@@ -1,9 +1,8 @@
-<<<<<<< HEAD
 from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
 import os
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.question_answering import load_qa_chain
 from langchain_groq import ChatGroq
@@ -129,9 +128,7 @@ def ask_question():
         # Embed chunks
         try:
             embeddings = HuggingFaceEmbeddings(
-                model_name="sentence-transformers/all-MiniLM-L6-v2",
-                model_kwargs={'device': 'cpu'},
-                encode_kwargs={'normalize_embeddings': True}
+                model_name="sentence-transformers/all-MiniLM-L6-v2"
             )
             vectorstore = FAISS.from_texts(texts, embeddings)
         except Exception as e:
@@ -187,107 +184,3 @@ def internal_error(error):
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
-=======
-from flask import Flask, request, jsonify, render_template
-from werkzeug.utils import secure_filename
-import os
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.chains.question_answering import load_qa_chain
-from langchain_groq import ChatGroq
-from dotenv import load_dotenv
-from PyPDF2 import PdfReader
-
-# Load environment variables
-load_dotenv()
-
-# Retrieve environment variables
-GROQ_API_KEY = os.getenv('GROQ_API_KEY')
-PASSWORD = os.getenv('PASSWORD')
-
-# Flask configuration
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['ALLOWED_EXTENSIONS'] = {'pdf'}
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part in request'}), 400
-
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No file selected'}), 400
-
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(file_path)
-        return jsonify({'success': 'File uploaded successfully', 'filename': filename}), 200
-
-    return jsonify({'error': 'Invalid file format. Only PDF is allowed.'}), 400
-
-@app.route('/ask', methods=['POST'])
-def ask_question():
-    data = request.get_json()
-    question = data.get('question')
-    filename = data.get('filename')
-    password = data.get('password', '').strip()
-
-    # Compare with environment password
-    if password != (PASSWORD or '').strip():
-        return jsonify({'error': 'Invalid password'}), 403
-
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    if not os.path.exists(file_path):
-        return jsonify({'error': 'File not found'}), 404
-
-    # Extract text from PDF
-    try:
-        with open(file_path, 'rb') as f:
-            reader = PdfReader(f)
-            documents = []
-            for i, page in enumerate(reader.pages):
-                page_text = page.extract_text()
-                if page_text:
-                    documents.append(f"[Page {i+1}]\n{page_text}")
-    except Exception as e:
-        return jsonify({'error': f'Error reading PDF: {str(e)}'}), 500
-
-    if not documents:
-        return jsonify({'error': 'No readable text found in the PDF.'}), 400
-
-    # Split and embed chunks
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    texts = text_splitter.split_text("\n".join(documents))
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    vectorstore = FAISS.from_texts(texts, embeddings)
-    docs = vectorstore.similarity_search(question, k=5)
-
-    # System prompt + LLM call
-    llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name="llama3-8b-8192")
-    system_prompt = (
-        "You are a helpful assistant. Answer only using content from the provided PDF. "
-        "If not found, say 'Not found in the document'. Respond in both Arabic and English."
-    )
-    prompt = f"{system_prompt}\n\nQuestion: {question}"
-
-    try:
-        chain = load_qa_chain(llm=llm, chain_type="stuff")
-        answer = chain.run(input_documents=docs, question=prompt)
-        return jsonify({'answer': answer})
-    except Exception as e:
-        return jsonify({'error': f'LLM error: {str(e)}'}), 500
-
-if __name__ == '__main__':
-    app.run(debug=True)
->>>>>>> 801936c935c8f84e30a848a7e41a116360589f2f
