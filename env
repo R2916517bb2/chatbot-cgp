@@ -1,5 +1,4 @@
-
-GROQ_API_KEY=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
+OPENAI_API_KEY=your_openai_api_key_here
 NGROK_TOKEN=2yenKU83I2XYvjBDKhkkMSwua3p_8gFQkz3EsUPRSMYpoHwW
 NGROK_DOMAIN=my-pdf-qa.ngrok.app
 PASSWORD=654321
